@@ -25,15 +25,17 @@ As a QA/SDET-focused engineer, I wanted a tool that goes beyond writing individu
 4. Every run (endpoint, status, response time, pass/fail, schema violations) is logged to Postgres
 5. An HTML report summarizes the results
 
+## Live Demo
+
+🔗 [Coming soon]
+
 ## Getting Started
 
-\`\`\`bash
+​```bash
 git clone https://github.com/<your-username>/vigil.git
 cd vigil
 docker compose up
-\`\`\`
-
-The app will be available at `http://localhost:8000`.
+​```
 
 ## Roadmap
 
