@@ -31,11 +31,11 @@ As a QA/SDET-focused engineer, I wanted a tool that goes beyond writing individu
 
 ## Getting Started
 
-​```bash
+```bash
 git clone https://github.com/<your-username>/vigil.git
 cd vigil
 docker compose up
-​```
+```
 
 ## Roadmap
 
