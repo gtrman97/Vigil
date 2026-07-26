@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import httpx
 
-from app.database import Base, engine
+from app.database import Base, engine, SessionLocal
 from app import models
+
+from typing import Optional, Tuple
 
 Base.metadata.create_all(bind=engine)
 
@@ -28,6 +30,40 @@ def fetch_spec(spec_url: str) -> dict:
 
     return spec
 
+def validate_response(operation: dict, response: httpx.Response) -> Tuple[bool, Optional[str]]:
+    documented_responses = operation.get("responses", {})
+    status_str = str(response.status_code)
+
+    if status_str not in documented_responses:
+        return False, f"Status code {response.status_code} not documented in spec"
+
+    response_spec = documented_responses[status_str]
+    content = response_spec.get("content", {})
+    json_content = content.get("application/json")
+
+    if not json_content:
+        return True, None
+
+    expected_type = json_content.get("schema", {}).get("type")
+    if not expected_type:
+        return True, None
+
+    try:
+        body = response.json()
+    except ValueError:
+        return False, "Response body is not valid JSON"
+
+    if isinstance(body, dict):
+        actual_type = "object"
+    elif isinstance(body, list):
+        actual_type = "array"
+    else:
+        actual_type = type(body).__name__
+
+    if expected_type != actual_type:
+        return False, f"Expected response type '{expected_type}', got '{actual_type}'"
+
+    return True, None
 
 @app.get("/health")
 def health_check():
@@ -47,42 +83,58 @@ def upload_spec(request: SpecRequest):
 @app.post("/run-tests")
 def run_tests(request: SpecRequest):
     spec = fetch_spec(request.spec_url)
-
     servers = spec.get("servers", [])
     if not servers:
         raise HTTPException(status_code=400, detail="Spec has no server URL defined")
     base_url = servers[0]["url"]
-
     if not base_url.startswith("http"):
         origin = httpx.URL(request.spec_url)
         base_url = f"{origin.scheme}://{origin.host}{base_url}"
 
+    db = SessionLocal()
     results = []
 
-    for path, methods in spec.get("paths", {}).items():
-        if "get" not in methods:
-            continue
+    try:
+        for path, methods in spec.get("paths", {}).items():
+            if "get" not in methods:
+                continue
 
-        resolved_path = path
-        for param in methods["get"].get("parameters", []):
-            if param.get("in") == "path":
-                resolved_path = resolved_path.replace(f"{{{param['name']}}}", "1")
+            operation = methods["get"]
+            resolved_path = path
+            for param in operation.get("parameters", []):
+                if param.get("in") == "path":
+                    resolved_path = resolved_path.replace(f"{{{param['name']}}}", "1")
 
-        url = base_url + resolved_path
+            url = base_url + resolved_path
 
-        try:
-            response = httpx.get(url, timeout=10.0)
+            try:
+                response = httpx.get(url, timeout=10.0)
+                passed, error_message = validate_response(operation, response)
+                status_code = response.status_code
+            except httpx.HTTPError as e:
+                passed = False
+                error_message = str(e)
+                status_code = 0
+
+            result_row = models.TestResult(
+                endpoint=path,
+                method="GET",
+                status_code=status_code,
+                passed=passed,
+                error_message=error_message,
+            )
+            db.add(result_row)
+
             results.append({
                 "endpoint": path,
                 "method": "GET",
-                "status_code": response.status_code,
+                "status_code": status_code,
+                "passed": passed,
+                "error_message": error_message,
             })
-        except httpx.HTTPError as e:
-            results.append({
-                "endpoint": path,
-                "method": "GET",
-                "status_code": None,
-                "error": str(e),
-            })
+
+        db.commit()
+    finally:
+        db.close()
 
     return {"tested": len(results), "results": results}
