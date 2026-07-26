@@ -53,6 +53,10 @@ def run_tests(request: SpecRequest):
         raise HTTPException(status_code=400, detail="Spec has no server URL defined")
     base_url = servers[0]["url"]
 
+    if not base_url.startswith("http"):
+        origin = httpx.URL(request.spec_url)
+        base_url = f"{origin.scheme}://{origin.host}{base_url}"
+
     results = []
 
     for path, methods in spec.get("paths", {}).items():
