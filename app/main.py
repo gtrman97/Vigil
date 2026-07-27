@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import httpx
 
@@ -10,7 +12,7 @@ from typing import Optional, Tuple
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Vigil")
-
+templates = Jinja2Templates(directory="app/templates")
 
 class SpecRequest(BaseModel):
     spec_url: str
@@ -138,3 +140,12 @@ def run_tests(request: SpecRequest):
         db.close()
 
     return {"tested": len(results), "results": results}
+@app.get("/report", response_class=HTMLResponse)
+def get_report(request: Request):
+    db = SessionLocal()
+    try:
+        results = db.query(models.TestResult).order_by(models.TestResult.run_at.desc()).all()
+    finally:
+        db.close()
+
+    return templates.TemplateResponse("report.html", {"request": request, "results": results})
