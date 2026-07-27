@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vigil Test Report</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .pass { background-color: #d4edda; }
+        .fail { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Vigil Test Report</h1>
+    <p>Total results: {{ results|length }}</p>
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Status Code</th>
+            <th>Passed</th>
+            <th>Error</th>
+            <th>Run At</th>
+        </tr>
+        {% for result in results %}
+        <tr class="{{ 'pass' if result.passed else 'fail' }}">
+            <td>{{ result.endpoint }}</td>
+            <td>{{ result.method }}</td>
+            <td>{{ result.status_code }}</td>
+            <td>{{ 'Yes' if result.passed else 'No' }}</td>
+            <td>{{ result.error_message or '' }}</td>
+            <td>{{ result.run_at }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
