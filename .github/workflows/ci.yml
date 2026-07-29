@@ -16,9 +16,6 @@ jobs:
       - name: Build and start containers
         run: docker compose up --build -d
 
-      - name: Wait for app to be ready
-        run: sleep 5
-
       - name: Show container logs if app isn't running
         run: docker compose logs app
 

@@ -15,9 +15,6 @@ jobs:
       - name: Build and start containers
         run: docker compose up --build -d
 
-      - name: Wait for app to be ready
-        run: sleep 5
-
       - name: Run tests against Petstore API
         run: |
           curl -X POST http://127.0.0.1:8000/run-tests \
