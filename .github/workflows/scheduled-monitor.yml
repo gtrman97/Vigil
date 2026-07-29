@@ -1,0 +1,29 @@
+name: Scheduled API Monitor
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and start containers
+        run: docker compose up --build -d
+
+      - name: Wait for app to be ready
+        run: sleep 5
+
+      - name: Run tests against Petstore API
+        run: |
+          curl -X POST http://127.0.0.1:8000/run-tests \
+            -H "Content-Type: application/json" \
+            -d '{"spec_url": "https://petstore3.swagger.io/api/v3/openapi.json"}'
+
+      - name: Tear down
+        if: always()
+        run: docker compose down
