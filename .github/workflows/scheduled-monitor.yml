@@ -38,3 +38,17 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose down
+
+      - name: Run tests against Petstore API
+        run: |
+          curl -X POST http://127.0.0.1:8000/run-tests \
+            -H "Content-Type: application/json" \
+            -d '{"spec_url": "https://petstore3.swagger.io/api/v3/openapi.json"}'
+
+      - name: Show app logs
+        if: always()
+        run: docker compose logs app
+
+      - name: Tear down
+        if: always()
+        run: docker compose down
