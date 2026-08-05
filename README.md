@@ -4,7 +4,7 @@ Automated API testing tool. Upload an OpenAPI spec, and Vigil generates requests
 
 ## Why I built this
 
-As a QA/SDET-focused engineer, I wanted a tool that goes beyond writing individual API tests by hand: one that can take any OpenAPI spec and automatically generate and validate a full test run against it, then track results over time in a real database rather than a one-off console output.
+I wanted a tool that goes beyond writing individual API tests by hand: one that can take any OpenAPI spec and automatically generate and validate a full test run against it, then track results over time in a real database rather than a one-off console output.
 
 ## Tech Stack
 
