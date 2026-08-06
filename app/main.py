@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from jsonschema import Draft7Validator, RefResolver
 import httpx
 
 from app.database import Base, engine, SessionLocal
@@ -32,7 +33,7 @@ def fetch_spec(spec_url: str) -> dict:
 
     return spec
 
-def validate_response(operation: dict, response: httpx.Response) -> Tuple[bool, Optional[str]]:
+def validate_response(spec: dict, operation: dict, response: httpx.Response) -> Tuple[bool, Optional[str]]:
     documented_responses = operation.get("responses", {})
     status_str = str(response.status_code)
 
@@ -46,8 +47,8 @@ def validate_response(operation: dict, response: httpx.Response) -> Tuple[bool, 
     if not json_content:
         return True, None
 
-    expected_type = json_content.get("schema", {}).get("type")
-    if not expected_type:
+    schema = json_content.get("schema")
+    if not schema:
         return True, None
 
     try:
@@ -55,15 +56,12 @@ def validate_response(operation: dict, response: httpx.Response) -> Tuple[bool, 
     except ValueError:
         return False, "Response body is not valid JSON"
 
-    if isinstance(body, dict):
-        actual_type = "object"
-    elif isinstance(body, list):
-        actual_type = "array"
-    else:
-        actual_type = type(body).__name__
+    resolver = RefResolver.from_schema(spec)
+    validator = Draft7Validator(schema, resolver=resolver)
+    errors = sorted(validator.iter_errors(body), key=str)
 
-    if expected_type != actual_type:
-        return False, f"Expected response type '{expected_type}', got '{actual_type}'"
+    if errors:
+        return False, errors[0].message
 
     return True, None
 
@@ -111,7 +109,7 @@ def run_tests(request: SpecRequest):
 
             try:
                 response = httpx.get(url, timeout=10.0)
-                passed, error_message = validate_response(operation, response)
+                passed, error_message = validate_response(spec, operation, response)
                 status_code = response.status_code
             except httpx.HTTPError as e:
                 passed = False
