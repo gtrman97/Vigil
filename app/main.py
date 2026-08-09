@@ -2,7 +2,9 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from jsonschema import Draft7Validator, RefResolver
+from jsonschema import Draft7Validator
+from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT7
 import httpx
 
 from app.database import Base, engine, SessionLocal
@@ -56,8 +58,9 @@ def validate_response(spec: dict, operation: dict, response: httpx.Response) -> 
     except ValueError:
         return False, "Response body is not valid JSON"
 
-    resolver = RefResolver.from_schema(spec)
-    validator = Draft7Validator(schema, resolver=resolver)
+    resource = Resource(contents=spec, specification=DRAFT7)
+    registry = resource @ Registry()
+    validator = Draft7Validator(schema, registry=registry)
     errors = sorted(validator.iter_errors(body), key=str)
 
     if errors:
