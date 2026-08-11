@@ -59,7 +59,7 @@ def validate_response(spec: dict, operation: dict, response: httpx.Response) -> 
         return False, "Response body is not valid JSON"
 
     resource = Resource(contents=spec, specification=DRAFT7)
-    registry = resource @ Registry()
+    registry = Registry().with_resource(uri="", resource=resource)
     validator = Draft7Validator(schema, registry=registry)
     errors = sorted(validator.iter_errors(body), key=str)
 
