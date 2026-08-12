@@ -3,8 +3,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from jsonschema import Draft7Validator
-from referencing import Registry, Resource
-from referencing.jsonschema import DRAFT7
 import httpx
 
 from app.database import Base, engine, SessionLocal
@@ -35,6 +33,23 @@ def fetch_spec(spec_url: str) -> dict:
 
     return spec
 
+def resolve_schema_refs(schema, spec, seen=None):
+    if seen is None:
+        seen = set()
+    if isinstance(schema, dict):
+        if "$ref" in schema:
+            ref = schema["$ref"]
+            if ref in seen or not ref.startswith("#/"):
+                return {}
+            target = spec
+            for part in ref.lstrip("#/").split("/"):
+                target = target[part]
+            return resolve_schema_refs(target, spec, seen | {ref})
+        return {key: resolve_schema_refs(value, spec, seen) for key, value in schema.items()}
+    if isinstance(schema, list):
+        return [resolve_schema_refs(item, spec, seen) for item in schema]
+    return schema
+
 def validate_response(spec: dict, operation: dict, response: httpx.Response) -> Tuple[bool, Optional[str]]:
     documented_responses = operation.get("responses", {})
     status_str = str(response.status_code)
@@ -58,9 +73,8 @@ def validate_response(spec: dict, operation: dict, response: httpx.Response) -> 
     except ValueError:
         return False, "Response body is not valid JSON"
 
-    resource = Resource(contents=spec, specification=DRAFT7)
-    registry = Registry().with_resource(uri="", resource=resource)
-    validator = Draft7Validator(schema, registry=registry)
+    resolved_schema = resolve_schema_refs(schema, spec)
+    validator = Draft7Validator(resolved_schema)
     errors = sorted(validator.iter_errors(body), key=str)
 
     if errors:
