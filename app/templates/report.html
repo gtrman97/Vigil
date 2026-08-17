@@ -18,17 +18,27 @@
             color: #ff2bd6;
         }
         .table-wrapper {
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #3d2a54;
             margin-top: 1rem;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
         }
         table {
             border-collapse: collapse;
             width: 100%;
         }
         th, td {
-            border: 1px solid #3d2a54;
+            border-right: 1px solid #3d2a54;
+            border-bottom: 1px solid #3d2a54;
             padding: 10px 12px;
             text-align: left;
+        }
+        th:last-child, td:last-child {
+            border-right: none;
+        }
+        tr:last-child td {
+            border-bottom: none;
         }
         th {
             background-color: #251838;
@@ -37,18 +47,6 @@
             text-transform: uppercase;
             font-size: 0.85rem;
             letter-spacing: 1px;
-        }
-        tr:first-child th:first-child {
-            border-top-left-radius: 12px;
-        }
-        tr:first-child th:last-child {
-            border-top-right-radius: 12px;
-        }
-        tr:last-child td:first-child {
-            border-bottom-left-radius: 12px;
-        }
-        tr:last-child td:last-child {
-            border-bottom-right-radius: 12px;
         }
         .pass {
             background-color: rgba(0, 240, 255, 0.08);
