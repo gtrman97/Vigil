@@ -1,4 +1,8 @@
-<style>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vigil Test Report</title>
+    <style>
         body {
             font-family: 'Courier New', monospace;
             margin: 2rem;
@@ -44,3 +48,29 @@
             filter: brightness(1.3);
         }
     </style>
+</head>
+<body>
+    <h1>VIGIL // TEST REPORT</h1>
+    <p>Total results: {{ results|length }}</p>
+    <table>
+        <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Status Code</th>
+            <th>Passed</th>
+            <th>Error</th>
+            <th>Run At</th>
+        </tr>
+        {% for result in results %}
+        <tr class="{{ 'pass' if result.passed else 'fail' }}">
+            <td>{{ result.endpoint }}</td>
+            <td>{{ result.method }}</td>
+            <td>{{ result.status_code }}</td>
+            <td>{{ 'Yes' if result.passed else 'No' }}</td>
+            <td>{{ result.error_message or '' }}</td>
+            <td>{{ result.run_at }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
