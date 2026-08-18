@@ -17,16 +17,20 @@
         p {
             color: #ffb86c;
         }
-        .table-wrapper {
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid transparent;
-            border-image: linear-gradient(135deg, #8a6bb8, #4a3568) 1;
+        .table-border {
+            border-radius: 13px;
+            padding: 1px;
             margin-top: 1.5rem;
+            background: linear-gradient(135deg, #8a6bb8, #4a3568);
             box-shadow:
                 0 20px 40px rgba(0, 0, 0, 0.55),
                 0 8px 16px rgba(0, 0, 0, 0.4),
                 0 0 24px rgba(45, 229, 255, 0.18);
+        }
+        .table-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #120a1f;
         }
         table {
             border-collapse: collapse;
@@ -64,31 +68,33 @@
 <body>
     <h1>VIGIL // TEST REPORT</h1>
     <p>Total results: {{ results|length }}</p>
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Endpoint</th>
-                    <th>Method</th>
-                    <th>Status Code</th>
-                    <th>Passed</th>
-                    <th>Error</th>
-                    <th>Run At</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for result in results %}
-                <tr class="{{ 'pass' if result.passed else 'fail' }}">
-                    <td>{{ result.endpoint }}</td>
-                    <td>{{ result.method }}</td>
-                    <td>{{ result.status_code }}</td>
-                    <td>{{ 'Yes' if result.passed else 'No' }}</td>
-                    <td>{{ result.error_message or '' }}</td>
-                    <td>{{ result.run_at }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="table-border">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Status Code</th>
+                        <th>Passed</th>
+                        <th>Error</th>
+                        <th>Run At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr class="{{ 'pass' if result.passed else 'fail' }}">
+                        <td>{{ result.endpoint }}</td>
+                        <td>{{ result.method }}</td>
+                        <td>{{ result.status_code }}</td>
+                        <td>{{ 'Yes' if result.passed else 'No' }}</td>
+                        <td>{{ result.error_message or '' }}</td>
+                        <td>{{ result.run_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
