@@ -51,12 +51,12 @@ Once running, the app is available at `http://localhost:8000`:
 # Fetch and validate a spec
 curl -X POST http://localhost:8000/specs \
   -H "Content-Type: application/json" \
-  -d '{"spec_url": "https://petstore3.swagger.io/api/v3/openapi.json"}'
+  -d '{"spec_url": "https://api.weather.gov/openapi.json"}'
 
 # Run tests against every GET endpoint in the spec
 curl -X POST http://localhost:8000/run-tests \
   -H "Content-Type: application/json" \
-  -d '{"spec_url": "https://petstore3.swagger.io/api/v3/openapi.json"}'
+  -d '{"spec_url": "https://api.weather.gov/openapi.json"}'
 ```
 
 Then view the results in a browser at `http://localhost:8000/report`.
