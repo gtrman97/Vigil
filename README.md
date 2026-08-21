@@ -4,7 +4,11 @@ Automated API contract-testing tool. Point Vigil at a live OpenAPI spec URL, and
 
 ## Why I built this
 
-As a QA/SDET-focused engineer, I wanted a tool that goes beyond writing individual API tests by hand: one that can take any OpenAPI spec and automatically generate and validate a full test run against it, then track results over time in a real database rather than a one-off console output.
+I wanted a tool that goes beyond writing individual API tests by hand: one that can take any OpenAPI spec and automatically generate and validate a full test run against it, then track results over time in a real database rather than a one-off console output.
+
+## Live Demo
+
+🔗 [https://vigil-production-51f6.up.railway.app/report](https://vigil-production-51f6.up.railway.app/report)
 
 ## Tech Stack
 
