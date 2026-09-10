@@ -8,7 +8,7 @@ I wanted a tool that goes beyond writing individual API tests by hand: one that 
 
 ## Live Demo
 
-🔗 [https://vigil-production-51f6.up.railway.app/report](https://vigil-production-51f6.up.railway.app/report)
+🔗 [https://vigil-production-51f6.up.railway.app/report](https://vigil-production-51f6.up.railway.app/)
 
 ## Tech Stack
 
