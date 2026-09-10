@@ -1,5 +1,5 @@
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, Request, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from jsonschema import Draft7Validator
@@ -96,16 +96,29 @@ def upload_spec(request: SpecRequest):
         "endpoint_count": len(spec.get("paths", {})),
     }
 
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 
 @app.post("/run-tests")
 def run_tests(request: SpecRequest):
-    spec = fetch_spec(request.spec_url)
+    results = run_tests_logic(request.spec_url)
+    return {"tested": len(results), "results": results}
+
+
+@app.post("/run-tests-form")
+def run_tests_form(spec_url: str = Form(...)):
+    run_tests_logic(spec_url)
+    return RedirectResponse(url="/report", status_code=303)
+def run_tests_logic(spec_url: str):
+    spec = fetch_spec(spec_url)
     servers = spec.get("servers", [])
     if not servers:
         raise HTTPException(status_code=400, detail="Spec has no server URL defined")
     base_url = servers[0]["url"]
     if not base_url.startswith("http"):
-        origin = httpx.URL(request.spec_url)
+        origin = httpx.URL(spec_url)
         base_url = f"{origin.scheme}://{origin.host}{base_url}"
 
     db = SessionLocal()
@@ -154,7 +167,7 @@ def run_tests(request: SpecRequest):
     finally:
         db.close()
 
-    return {"tested": len(results), "results": results}
+    return results
 @app.get("/report", response_class=HTMLResponse)
 def get_report(request: Request):
     db = SessionLocal()
