@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vigil</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 2rem;
+            background-color: #120a1f;
+            color: #d8d3ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .card-border {
+            border-radius: 13px;
+            padding: 1px;
+            background: linear-gradient(135deg, #8a6bb8, #4a3568);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.55),
+                0 8px 16px rgba(0, 0, 0, 0.4),
+                0 0 24px rgba(45, 229, 255, 0.18);
+        }
+        .card {
+            border-radius: 12px;
+            background-color: #1a1025;
+            padding: 2.5rem;
+            width: 480px;
+            text-align: center;
+        }
+        h1 {
+            color: #2de5ff;
+            text-shadow: 0 0 6px #2de5ff;
+            letter-spacing: 2px;
+            margin-bottom: 0.25rem;
+        }
+        p.subtitle {
+            color: #ffb86c;
+            margin-top: 0;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        label {
+            display: block;
+            text-align: left;
+            color: #2de5ff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background-color: #241640;
+            border: 1px solid #3d2a54;
+            border-radius: 6px;
+            color: #d8d3ea;
+            margin-bottom: 1.5rem;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2de5ff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: #2de5ff;
+            color: #120a1f;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #7ef4ff;
+        }
+        .report-link {
+            display: block;
+            margin-top: 1.5rem;
+            color: #7dffd6;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+        .report-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-border">
+        <div class="card">
+            <h1>VIGIL</h1>
+            <p class="subtitle">API Contract Testing</p>
+            <form action="/run-tests-form" method="post">
+                <label for="spec_url">OpenAPI Spec URL</label>
+                <input type="text" id="spec_url" name="spec_url" placeholder="https://api.weather.gov/openapi.json" required>
+                <button type="submit">Run Tests</button>
+            </form>
+            <a class="report-link" href="/report">View latest report →</a>
+        </div>
+    </div>
+</body>
+</html>
