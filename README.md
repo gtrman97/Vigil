@@ -8,7 +8,9 @@ I wanted a tool that goes beyond writing individual API tests by hand: one that 
 
 ## Live Demo
 
-🔗 [https://vigil-production-51f6.up.railway.app/report](https://vigil-production-51f6.up.railway.app/)
+🔗 [https://vigil-nxma.onrender.com](https://vigil-nxma.onrender.com)
+
+> **Note:** Hosted on a free tier — the first request after a period of inactivity may take 30-60 seconds to load.
 
 ## Tech Stack
 
@@ -51,34 +53,7 @@ Once running, the app is available at `http://localhost:8000`:
 # Fetch and validate a spec
 curl -X POST http://localhost:8000/specs \
   -H "Content-Type: application/json" \
-  -d '{"spec_url": "https://api.weather.gov/openapi.json"}'
+-d '{"spec_url": "https://api.weather.gov/openapi.json"}'
 
 # Run tests against every GET endpoint in the spec
-curl -X POST http://localhost:8000/run-tests \
-  -H "Content-Type: application/json" \
-  -d '{"spec_url": "https://api.weather.gov/openapi.json"}'
-```
-
-Then view the results in a browser at `http://localhost:8000/report`.
-
-## Running Tests
-
-Vigil's own test suite runs inside the app container:
-
-```bash
-docker exec vigil-app-1 pytest
-```
-
-## Roadmap
-
-- [ ] POST/PUT/DELETE request generation
-- [ ] JWT authentication
-- [ ] CSV export of results
-- [ ] Breaking-change detection between spec versions
-- [ ] React dashboard
-- [ ] Response time measurement
-- [ ] AI-assisted test suggestions / failure summaries
-
-## License
-
-MIT
+curl -X POST
